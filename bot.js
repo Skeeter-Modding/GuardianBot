@@ -2708,6 +2708,13 @@ class GuardianBot {
         try {
             await interaction.deferReply();
 
+            // Check bot permissions
+            const botMember = guild.members.cache.get(this.client.user.id);
+            const hasManageChannels = botMember.permissions.has(PermissionFlagsBits.ManageChannels);
+            const hasManageRoles = botMember.permissions.has(PermissionFlagsBits.ManageRoles);
+            const hasKickMembers = botMember.permissions.has(PermissionFlagsBits.KickMembers);
+            const hasBanMembers = botMember.permissions.has(PermissionFlagsBits.BanMembers);
+
             const embed = new EmbedBuilder()
                 .setTitle('🛡️ Guardian Bot Status')
                 .addFields(
@@ -2716,9 +2723,10 @@ class GuardianBot {
                     { name: '💥 Anti-Nuke', value: config.antiNuke.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
                     { name: '👮 Admin Monitoring', value: config.adminMonitoring.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
                     { name: '📝 Logging', value: config.logging.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
-                    { name: '⚡ Rapid Response', value: '🟢 Active', inline: true }
+                    { name: '⚡ Rapid Response', value: '🟢 Active', inline: true },
+                    { name: '🔧 Bot Permissions', value: `Channels: ${hasManageChannels ? '✅' : '❌'} | Roles: ${hasManageRoles ? '✅' : '❌'} | Kick: ${hasKickMembers ? '✅' : '❌'} | Ban: ${hasBanMembers ? '✅' : '❌'}`, inline: false }
                 )
-                .setColor(0x00ff00)
+                .setColor(hasManageChannels && hasManageRoles ? 0x00ff00 : 0xffa500)
                 .setTimestamp();
 
             // Add warning system stats if database is available
@@ -2734,6 +2742,13 @@ class GuardianBot {
                 } catch (error) {
                     console.error('Failed to get warning stats:', error);
                 }
+            }
+
+            // Add permission warnings if needed
+            if (!hasManageChannels || !hasManageRoles) {
+                embed.addFields(
+                    { name: '⚠️ Permission Issues', value: 'Bot is missing critical permissions. Lockdown and some moderation features may not work properly. Please grant Administrator permission or the specific permissions shown above.', inline: false }
+                );
             }
 
             await interaction.editReply({ embeds: [embed] });
@@ -3210,10 +3225,21 @@ class GuardianBot {
         try {
             const logChannel = guild.channels.cache.get(config.logChannelId);
             if (logChannel && logChannel.isTextBased()) {
+                // Check if bot has permission to send messages in this channel
+                const botMember = guild.members.cache.get(this.client.user.id);
+                const permissions = logChannel.permissionsFor(botMember);
+                
+                if (!permissions || !permissions.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) {
+                    console.warn(`⚠️ Missing permissions for log channel ${logChannel.name}. Need: Send Messages, Embed Links`);
+                    return;
+                }
+                
                 await logChannel.send({ embeds: [embed] });
+            } else {
+                console.warn('⚠️ Log channel not found or not accessible. Check logChannelId in config.json');
             }
         } catch (error) {
-            console.error('Failed to send to log channel:', error);
+            console.error('Failed to send to log channel:', error.message || error);
         }
     }
 

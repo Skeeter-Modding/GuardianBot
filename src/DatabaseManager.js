@@ -25,10 +25,7 @@ class DatabaseManager {
                 password: config.database.password,
                 database: config.database.database,
                 connectionLimit: config.database.connectionLimit,
-                ssl: config.database.ssl,
-                acquireTimeout: 60000,
-                timeout: 60000,
-                reconnect: true
+                ssl: config.database.ssl
             });
 
             // Test connection
