@@ -1,0 +1,278 @@
+<div class="row">
+    <!-- Header -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2><i class="fas fa-cog text-danger"></i> Admin Dashboard</h2>
+                        <p class="text-muted mb-0">Complete system overview and administrative controls</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-success fs-6">System Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Statistics -->
+    <div class="col-12 mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card stat-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= systemStats.guilds %></h4>
+                                <p class="mb-0">Servers</p>
+                            </div>
+                            <i class="fas fa-server fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= systemStats.users %></h4>
+                                <p class="mb-0">Users</p>
+                            </div>
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= systemStats.totalLogs %></h4>
+                                <p class="mb-0">Recent Logs</p>
+                            </div>
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= Math.round(systemStats.uptime / 3600) %>h</h4>
+                                <p class="mb-0">Uptime</p>
+                            </div>
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Moderation Logs -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-shield-alt"></i> Moderation Logs</h5>
+                <button class="btn btn-sm btn-primary" onclick="refreshLogs()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <div id="moderation-logs">
+                    <% if (logs && logs.length > 0) { %>
+                        <% logs.slice(0, 20).forEach(log => { %>
+                            <div class="log-item p-3 mb-2 bg-light rounded">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong><%= log.action_type %></strong>
+                                        <span class="text-muted">by <%= log.moderator_username %></span>
+                                    </div>
+                                    <small class="text-muted">
+                                        <%= new Date(log.created_at).toLocaleString() %>
+                                    </small>
+                                </div>
+                                <% if (log.target_username) { %>
+                                    <div class="mt-1">
+                                        <small>Target: <strong><%= log.target_username %></strong></small>
+                                    </div>
+                                <% } %>
+                                <% if (log.reason) { %>
+                                    <div class="mt-1">
+                                        <small class="text-muted">Reason: <%= log.reason %></small>
+                                    </div>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p>No recent moderation logs</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skeeter Protection Logs -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-shield"></i> Skeeter Protection Violations</h5>
+            </div>
+            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                <% if (skeeterViolations && skeeterViolations.length > 0) { %>
+                    <% skeeterViolations.slice(0, 15).forEach(violation => { %>
+                        <div class="log-item danger p-2 mb-2 bg-light rounded">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong><%= violation.violation_type.toUpperCase() %></strong>
+                                    <span class="text-muted">- <%= violation.username %></span>
+                                </div>
+                                <small class="text-muted">
+                                    <%= new Date(violation.created_at).toLocaleString() %>
+                                </small>
+                            </div>
+                            <% if (violation.message_content) { %>
+                                <div class="mt-1">
+                                    <small class="text-muted">Message: <%= violation.message_content.substring(0, 100) %>...</small>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <p>No recent Skeeter violations</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Ticket Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-ticket-alt"></i> Ticket Statistics</h5>
+            </div>
+            <div class="card-body">
+                <% if (ticketStats) { %>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4 class="text-primary"><%= ticketStats.total_tickets || 0 %></h4>
+                            <p class="mb-0">Total</p>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success"><%= ticketStats.closed_tickets || 0 %></h4>
+                            <p class="mb-0">Closed</p>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <h4 class="text-warning"><%= ticketStats.open_tickets || 0 %></h4>
+                            <p class="mb-0">Open</p>
+                        </div>
+                        <div class="col-6 mt-3">
+                            <h4 class="text-info"><%= Math.round(ticketStats.avg_claim_time_minutes || 0) %>m</h4>
+                            <p class="mb-0">Avg Response</p>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <p class="text-muted text-center">No ticket data available</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Staff Leaderboard -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-trophy"></i> Staff Leaderboard</h5>
+            </div>
+            <div class="card-body">
+                <% if (staffStats && staffStats.length > 0) { %>
+                    <% staffStats.slice(0, 5).forEach((staff, index) => { %>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <% if (index === 0) { %>
+                                    <i class="fas fa-crown text-warning"></i>
+                                <% } else if (index === 1) { %>
+                                    <i class="fas fa-medal text-secondary"></i>
+                                <% } else if (index === 2) { %>
+                                    <i class="fas fa-medal text-warning"></i>
+                                <% } else { %>
+                                    <span class="badge bg-light text-dark"><%= index + 1 %></span>
+                                <% } %>
+                                <strong><%= staff.username %></strong>
+                            </div>
+                            <div class="text-end">
+                                <div><%= staff.tickets_closed %> closed</div>
+                                <small class="text-muted"><%= staff.avg_response_time %>m avg</small>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p class="text-muted text-center">No staff activity yet</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshLogs() {
+    fetch('/api/admin/logs?limit=20')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateLogsList(data.logs);
+            }
+        })
+        .catch(error => console.error('Error refreshing logs:', error));
+}
+
+function updateLogsList(logs) {
+    const container = document.getElementById('moderation-logs');
+    if (!logs || logs.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                <p>No recent moderation logs</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = logs.slice(0, 20).map(log => `
+        <div class="log-item p-3 mb-2 bg-light rounded">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>${log.action_type}</strong>
+                    <span class="text-muted">by ${log.moderator_username}</span>
+                </div>
+                <small class="text-muted">
+                    ${new Date(log.created_at).toLocaleString()}
+                </small>
+            </div>
+            ${log.target_username ? `
+                <div class="mt-1">
+                    <small>Target: <strong>${log.target_username}</strong></small>
+                </div>
+            ` : ''}
+            ${log.reason ? `
+                <div class="mt-1">
+                    <small class="text-muted">Reason: ${log.reason}</small>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function refreshAdminData() {
+    refreshLogs();
+}
+</script>

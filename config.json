@@ -1,0 +1,90 @@
+{
+  "token": "MTQzMDI3MDU3MDY5NTQ5MTcwNA.GzTtUE.zCC3SGFsEOuiSyDD-HxKC1cxIwI0yBe5pB2VC4",
+  "clientId": "1430270570695491704",
+  "logChannelId": "1390425247731417332",
+  "adminRoleIds": ["1430312672703938645", "1390425301519044759"],
+  "ownerIds": ["701257205445558293"],
+  "protectedUsers": ["1046266061961568306"],
+  "dashboard": {
+    "enabled": true,
+    "port": 3000,
+    "host": "0.0.0.0",
+    "clientSecret": "YOUR_DISCORD_CLIENT_SECRET_HERE"
+  },
+  "database": {
+    "enabled": true,
+    "host": "na05-sql.pebblehost.com",
+    "port": 3306,
+    "user": "customer_1163912_guardian_bot_db",
+    "password": "YwA2RZt8s87DzKLX",
+    "database": "customer_1163912_guardian_bot_db",
+    "connectionLimit": 10,
+    "ssl": false
+  },
+  "antiRaid": {
+    "enabled": true,
+    "joinThreshold": 5,
+    "timeWindow": 10000,
+    "punishmentType": "kick",
+    "lockdownOnRaid": true
+  },
+  "antiNuke": {
+    "enabled": true,
+    "channelDeleteThreshold": 3,
+    "roleDeleteThreshold": 3,
+    "timeWindow": 30000,
+    "banNukers": true
+  },
+  "adminMonitoring": {
+    "enabled": true,
+    "actionThreshold": 3,
+    "timeWindow": 120000,
+    "warningEnabled": true,
+    "autoRemoveRoles": true,
+    "autoBan": true
+  },
+  "lockdown": {
+    "removePermissions": ["SEND_MESSAGES", "ADD_REACTIONS", "CONNECT"],
+    "exemptRoles": ["ADMIN_ROLE_ID"]
+  },
+  "logging": {
+    "enabled": true,
+    "logBans": true,
+    "logKicks": true,
+    "logMutes": true,
+    "logJoins": true,
+    "logLeaves": true,
+    "logRoleChanges": true,
+    "logChannelChanges": true
+  },
+  "ticketSystem": {
+    "enabled": true,
+    "categoryId": null,
+    "staffRoleIds": ["1430312672703938645", "1390425301519044759"],
+    "supportRoleIds": ["1430312672703938645", "1390425301519044759"],
+    "transcriptChannelId": null,
+    "maxTicketsPerUser": 3,
+    "autoClose": {
+      "enabled": true,
+      "inactiveTime": 86400000,
+      "warningTime": 43200000
+    },
+    "priorities": {
+      "high": {
+        "color": "#ff0000",
+        "emoji": "🔴",
+        "pingRoles": ["1430312672703938645"]
+      },
+      "medium": {
+        "color": "#ffff00", 
+        "emoji": "🟡",
+        "pingRoles": []
+      },
+      "low": {
+        "color": "#00ff00",
+        "emoji": "🟢",
+        "pingRoles": []
+      }
+    }
+  }
+}

@@ -1,0 +1,342 @@
+<div class="row">
+    <!-- Header -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2><i class="fas fa-ticket-alt text-primary"></i> Staff Ticket Dashboard</h2>
+                        <p class="text-muted mb-0">Manage support tickets and customer requests</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="refreshTickets()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Stats -->
+    <% if (userStats) { %>
+        <div class="col-12 mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <h3><%= userStats.tickets_claimed || 0 %></h3>
+                            <p class="mb-0">Tickets Claimed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h3><%= userStats.tickets_closed || 0 %></h3>
+                            <p class="mb-0">Tickets Closed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h3><%= userStats.avg_response_time || 0 %>m</h3>
+                            <p class="mb-0">Avg Response</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h3><%= userStats.response_count || 0 %></h3>
+                            <p class="mb-0">Total Responses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Active Tickets -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-ticket-alt"></i> Active Tickets</h5>
+                <div>
+                    <span class="badge bg-primary" id="ticket-count"><%= tickets.length %></span>
+                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="refreshTickets()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                <div id="tickets-container">
+                    <% if (tickets && tickets.length > 0) { %>
+                        <% tickets.forEach(ticket => { %>
+                            <div class="ticket-item ticket-<%= ticket.priority %> p-3 mb-3 bg-light rounded" data-ticket-id="<%= ticket.ticket_id %>">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            <span class="badge bg-<%= ticket.priority === 'high' ? 'danger' : ticket.priority === 'medium' ? 'warning' : 'success' %>">
+                                                <%= ticket.priority.toUpperCase() %>
+                                            </span>
+                                            <%= ticket.subject %>
+                                        </h6>
+                                        <p class="mb-2 text-muted"><%= ticket.description %></p>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-user"></i> <%= ticket.creator_username %>
+                                                </small>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock"></i> <%= new Date(ticket.created_at).toLocaleString() %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <% if (ticket.status === 'claimed' && ticket.claimed_by_username) { %>
+                                            <div class="mt-2">
+                                                <span class="badge bg-info">
+                                                    Claimed by <%= ticket.claimed_by_username %>
+                                                </span>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="ms-3">
+                                        <% if (ticket.status === 'open') { %>
+                                            <button class="btn btn-sm btn-primary mb-1" onclick="claimTicket('<%= ticket.ticket_id %>')">
+                                                <i class="fas fa-hand-paper"></i> Claim
+                                            </button>
+                                        <% } %>
+                                        <button class="btn btn-sm btn-success" onclick="closeTicket('<%= ticket.ticket_id %>')">
+                                            <i class="fas fa-check"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-ticket-alt fa-3x mb-3"></i>
+                            <h5>No Active Tickets</h5>
+                            <p>All tickets have been resolved! Great work! 🎉</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="refreshTickets()">
+                        <i class="fas fa-sync-alt"></i> Refresh Tickets
+                    </button>
+                    <button class="btn btn-success" onclick="claimNextTicket()">
+                        <i class="fas fa-hand-paper"></i> Claim Next Ticket
+                    </button>
+                    <a href="/admin" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Admin Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Closed Tickets -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-check-circle"></i> Recently Closed</h5>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <% if (recentClosed && recentClosed.length > 0) { %>
+                    <% recentClosed.slice(0, 10).forEach(ticket => { %>
+                        <div class="mb-3 p-2 bg-light rounded">
+                            <div class="d-flex justify-content-between">
+                                <strong class="text-truncate" style="max-width: 150px;">
+                                    <%= ticket.subject %>
+                                </strong>
+                                <small class="text-muted">
+                                    <%= new Date(ticket.closed_at).toLocaleDateString() %>
+                                </small>
+                            </div>
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    By: <%= ticket.closed_by_username || 'Unknown' %>
+                                </small>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-info-circle fa-2x mb-2"></i>
+                        <p>No recently closed tickets</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshTickets() {
+    fetch('/api/tickets')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateTicketsList(data.tickets);
+            }
+        })
+        .catch(error => console.error('Error refreshing tickets:', error));
+}
+
+function claimTicket(ticketId) {
+    fetch(`/api/tickets/${ticketId}/claim`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Ticket claimed successfully!', 'success');
+            refreshTickets();
+        } else {
+            showNotification('Failed to claim ticket: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error claiming ticket:', error);
+        showNotification('Error claiming ticket', 'error');
+    });
+}
+
+function closeTicket(ticketId) {
+    if (confirm('Are you sure you want to close this ticket?')) {
+        fetch(`/api/tickets/${ticketId}/close`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Ticket closed successfully!', 'success');
+                refreshTickets();
+            } else {
+                showNotification('Failed to close ticket: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error closing ticket:', error);
+            showNotification('Error closing ticket', 'error');
+        });
+    }
+}
+
+function claimNextTicket() {
+    const openTickets = document.querySelectorAll('.ticket-item');
+    for (let ticket of openTickets) {
+        const claimBtn = ticket.querySelector('button[onclick*="claimTicket"]');
+        if (claimBtn) {
+            claimBtn.click();
+            break;
+        }
+    }
+}
+
+function updateTicketsList(tickets) {
+    const container = document.getElementById('tickets-container');
+    const countBadge = document.getElementById('ticket-count');
+    
+    countBadge.textContent = tickets.length;
+    
+    if (!tickets || tickets.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-ticket-alt fa-3x mb-3"></i>
+                <h5>No Active Tickets</h5>
+                <p>All tickets have been resolved! Great work! 🎉</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = tickets.map(ticket => `
+        <div class="ticket-item ticket-${ticket.priority} p-3 mb-3 bg-light rounded" data-ticket-id="${ticket.ticket_id}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">
+                        <span class="badge bg-${ticket.priority === 'high' ? 'danger' : ticket.priority === 'medium' ? 'warning' : 'success'}">
+                            ${ticket.priority.toUpperCase()}
+                        </span>
+                        ${ticket.subject}
+                    </h6>
+                    <p class="mb-2 text-muted">${ticket.description}</p>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <small class="text-muted">
+                                <i class="fas fa-user"></i> ${ticket.creator_username}
+                            </small>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i> ${new Date(ticket.created_at).toLocaleString()}
+                            </small>
+                        </div>
+                    </div>
+                    ${ticket.status === 'claimed' && ticket.claimed_by_username ? `
+                        <div class="mt-2">
+                            <span class="badge bg-info">
+                                Claimed by ${ticket.claimed_by_username}
+                            </span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="ms-3">
+                    ${ticket.status === 'open' ? `
+                        <button class="btn btn-sm btn-primary mb-1" onclick="claimTicket('${ticket.ticket_id}')">
+                            <i class="fas fa-hand-paper"></i> Claim
+                        </button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-success" onclick="closeTicket('${ticket.ticket_id}')">
+                        <i class="fas fa-check"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showNotification(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+function refreshTicketData() {
+    refreshTickets();
+}
+</script>
