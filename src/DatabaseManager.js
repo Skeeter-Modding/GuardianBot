@@ -158,6 +158,30 @@ class DatabaseManager {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             `);
 
+            // Create warnings table
+            await this.query(`
+                CREATE TABLE IF NOT EXISTS warnings (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    guild_id VARCHAR(20) NOT NULL,
+                    user_id VARCHAR(20) NOT NULL,
+                    username VARCHAR(100) NOT NULL,
+                    moderator_id VARCHAR(20) NOT NULL,
+                    moderator_username VARCHAR(100) NOT NULL,
+                    reason TEXT NOT NULL,
+                    is_active BOOLEAN DEFAULT TRUE,
+                    removed_by VARCHAR(20) NULL,
+                    removed_by_username VARCHAR(100) NULL,
+                    removed_at TIMESTAMP NULL,
+                    removal_reason TEXT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_guild_id (guild_id),
+                    INDEX idx_user_id (user_id),
+                    INDEX idx_moderator_id (moderator_id),
+                    INDEX idx_is_active (is_active),
+                    INDEX idx_created_at (created_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            `);
+
             console.log('✅ Database tables initialized successfully!');
         } catch (error) {
             console.error('❌ Failed to initialize database tables:', error);
@@ -376,6 +400,103 @@ class DatabaseManager {
         } catch (error) {
             console.error('❌ Failed to log Skeeter violation:', error);
             return false;
+        }
+    }
+
+    // Warning System
+    async addWarning(guildId, userId, username, moderatorId, moderatorUsername, reason) {
+        try {
+            const sql = `
+                INSERT INTO warnings (
+                    guild_id, user_id, username, moderator_id, moderator_username, reason
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            `;
+            
+            const result = await this.query(sql, [guildId, userId, username, moderatorId, moderatorUsername, reason]);
+            return result.insertId;
+        } catch (error) {
+            console.error('❌ Failed to add warning:', error);
+            return null;
+        }
+    }
+
+    async getUserWarnings(guildId, userId, activeOnly = true) {
+        try {
+            const sql = `
+                SELECT * FROM warnings 
+                WHERE guild_id = ? AND user_id = ? ${activeOnly ? 'AND is_active = TRUE' : ''}
+                ORDER BY created_at DESC
+            `;
+            
+            return await this.query(sql, [guildId, userId]);
+        } catch (error) {
+            console.error('❌ Failed to get user warnings:', error);
+            return [];
+        }
+    }
+
+    async getWarningById(warningId, guildId) {
+        try {
+            const sql = `SELECT * FROM warnings WHERE id = ? AND guild_id = ? LIMIT 1`;
+            const results = await this.query(sql, [warningId, guildId]);
+            return results.length > 0 ? results[0] : null;
+        } catch (error) {
+            console.error('❌ Failed to get warning by ID:', error);
+            return null;
+        }
+    }
+
+    async removeWarning(warningId, guildId, removedBy, removedByUsername, removalReason = null) {
+        try {
+            const sql = `
+                UPDATE warnings 
+                SET is_active = FALSE, removed_by = ?, removed_by_username = ?, 
+                    removed_at = NOW(), removal_reason = ?
+                WHERE id = ? AND guild_id = ? AND is_active = TRUE
+            `;
+            
+            const result = await this.query(sql, [removedBy, removedByUsername, removalReason, warningId, guildId]);
+            return result.affectedRows > 0;
+        } catch (error) {
+            console.error('❌ Failed to remove warning:', error);
+            return false;
+        }
+    }
+
+    async getWarningStats(guildId) {
+        try {
+            const sql = `
+                SELECT 
+                    COUNT(*) as total_warnings,
+                    COUNT(CASE WHEN is_active = TRUE THEN 1 END) as active_warnings,
+                    COUNT(CASE WHEN is_active = FALSE THEN 1 END) as removed_warnings,
+                    COUNT(DISTINCT user_id) as warned_users,
+                    COUNT(DISTINCT moderator_id) as moderators_who_warned
+                FROM warnings 
+                WHERE guild_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            `;
+            
+            const results = await this.query(sql, [guildId]);
+            return results[0];
+        } catch (error) {
+            console.error('❌ Failed to get warning stats:', error);
+            return null;
+        }
+    }
+
+    async getUserWarningCount(guildId, userId, activeOnly = true) {
+        try {
+            const sql = `
+                SELECT COUNT(*) as warning_count 
+                FROM warnings 
+                WHERE guild_id = ? AND user_id = ? ${activeOnly ? 'AND is_active = TRUE' : ''}
+            `;
+            
+            const results = await this.query(sql, [guildId, userId]);
+            return results[0].warning_count;
+        } catch (error) {
+            console.error('❌ Failed to get user warning count:', error);
+            return 0;
         }
     }
 

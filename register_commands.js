@@ -77,6 +77,74 @@ const commands = [
         integration_types: [0, 1] // Both install types
     },
 
+    // Moderation Commands
+    {
+        name: 'warn',
+        description: 'Issue a warning to a user',
+        type: 1,
+        contexts: [0], // GUILD only
+        integration_types: [0], // GUILD_INSTALL only
+        default_member_permissions: '1099511627776', // MODERATE_MEMBERS
+        options: [
+            {
+                type: 6, // USER
+                name: 'user',
+                description: 'User to warn',
+                required: true
+            },
+            {
+                type: 3, // STRING
+                name: 'reason',
+                description: 'Reason for the warning',
+                required: true
+            }
+        ]
+    },
+    {
+        name: 'warnings',
+        description: 'View warnings for a user',
+        type: 1,
+        contexts: [0], // GUILD only
+        integration_types: [0], // GUILD_INSTALL only
+        default_member_permissions: '1099511627776', // MODERATE_MEMBERS
+        options: [
+            {
+                type: 6, // USER
+                name: 'user',
+                description: 'User to check warnings for',
+                required: false
+            },
+            {
+                type: 5, // BOOLEAN
+                name: 'show-removed',
+                description: 'Include removed warnings',
+                required: false
+            }
+        ]
+    },
+    {
+        name: 'removewarn',
+        description: 'Remove a warning by ID',
+        type: 1,
+        contexts: [0], // GUILD only
+        integration_types: [0], // GUILD_INSTALL only
+        default_member_permissions: '1099511627776', // MODERATE_MEMBERS
+        options: [
+            {
+                type: 4, // INTEGER
+                name: 'warning-id',
+                description: 'ID of the warning to remove',
+                required: true
+            },
+            {
+                type: 3, // STRING
+                name: 'reason',
+                description: 'Reason for removing the warning',
+                required: false
+            }
+        ]
+    },
+
     // General Commands
     {
         name: 'status',

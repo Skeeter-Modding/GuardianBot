@@ -215,6 +215,48 @@ class GuardianBot {
                 ),
             
             new SlashCommandBuilder()
+                .setName('warn')
+                .setDescription('Issue a warning to a user')
+                .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('User to warn')
+                        .setRequired(true)
+                )
+                .addStringOption(option =>
+                    option.setName('reason')
+                        .setDescription('Reason for the warning')
+                        .setRequired(true)
+                ),
+
+            new SlashCommandBuilder()
+                .setName('warnings')
+                .setDescription('View warnings for a user')
+                .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('User to check warnings for')
+                        .setRequired(false)
+                )
+                .addBooleanOption(option =>
+                    option.setName('show-removed')
+                        .setDescription('Include removed warnings')
+                        .setRequired(false)
+                ),
+
+            new SlashCommandBuilder()
+                .setName('removewarn')
+                .setDescription('Remove a warning by ID')
+                .addIntegerOption(option =>
+                    option.setName('warning-id')
+                        .setDescription('ID of the warning to remove')
+                        .setRequired(true)
+                )
+                .addStringOption(option =>
+                    option.setName('reason')
+                        .setDescription('Reason for removing the warning')
+                        .setRequired(false)
+                ),
+            
+            new SlashCommandBuilder()
                 .setName('status')
                 .setDescription('Show Guardian Bot protection status'),
             
@@ -2248,6 +2290,27 @@ class GuardianBot {
                     await this.handleSlashPurgeCommand(interaction);
                     break;
 
+                case 'warn':
+                    if (!this.hasPermission(interaction.member)) {
+                        return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
+                    }
+                    await this.handleSlashWarnCommand(interaction);
+                    break;
+
+                case 'warnings':
+                    if (!this.hasPermission(interaction.member)) {
+                        return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
+                    }
+                    await this.handleSlashWarningsCommand(interaction);
+                    break;
+
+                case 'removewarn':
+                    if (!this.hasPermission(interaction.member)) {
+                        return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
+                    }
+                    await this.handleSlashRemoveWarnCommand(interaction);
+                    break;
+
                 case 'emergency-restore':
                     if (!this.hasPermission(interaction.member)) {
                         return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
@@ -2384,24 +2447,306 @@ class GuardianBot {
         }
     }
 
+    // Warning System Commands
+    async handleSlashWarnCommand(interaction) {
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+            return interaction.reply({ content: '❌ You do not have permission to moderate members.', ephemeral: true });
+        }
+
+        const user = interaction.options.getUser('user');
+        const reason = interaction.options.getString('reason');
+
+        // Check if user is trying to warn themselves
+        if (user.id === interaction.user.id) {
+            return interaction.reply({ content: '❌ You cannot warn yourself!', ephemeral: true });
+        }
+
+        // Check if user is trying to warn a bot
+        if (user.bot) {
+            return interaction.reply({ content: '❌ You cannot warn bots!', ephemeral: true });
+        }
+
+        // Check if user is protected
+        if (config.protectedUsers && config.protectedUsers.includes(user.id)) {
+            return interaction.reply({ content: '❌ This user is protected and cannot be warned!', ephemeral: true });
+        }
+
+        try {
+            await interaction.deferReply();
+
+            // Add warning to database if enabled
+            let warningId = null;
+            if (this.db && this.db.isConnected) {
+                warningId = await this.db.addWarning(
+                    interaction.guild.id,
+                    user.id,
+                    user.username,
+                    interaction.user.id,
+                    interaction.user.username,
+                    reason
+                );
+
+                // Log the moderation action
+                await this.db.logModeration(
+                    interaction.guild.id,
+                    'warn',
+                    interaction.user.id,
+                    interaction.user.username,
+                    user.id,
+                    user.username,
+                    reason
+                );
+            }
+
+            // Get current warning count
+            const warningCount = this.db && this.db.isConnected 
+                ? await this.db.getUserWarningCount(interaction.guild.id, user.id)
+                : 1;
+
+            // Create warning embed
+            const warnEmbed = new EmbedBuilder()
+                .setTitle('⚠️ USER WARNING ISSUED')
+                .setColor(0xffa500)
+                .addFields(
+                    { name: '👤 User', value: `${user.tag} (<@${user.id}>)`, inline: true },
+                    { name: '👮 Moderator', value: `${interaction.user.tag}`, inline: true },
+                    { name: '📊 Warning Count', value: `${warningCount}`, inline: true },
+                    { name: '📝 Reason', value: reason, inline: false }
+                )
+                .setTimestamp()
+                .setFooter({ text: warningId ? `Warning ID: ${warningId}` : 'Warning System' });
+
+            // Add escalation notice if user has multiple warnings
+            if (warningCount >= 3) {
+                warnEmbed.addFields(
+                    { name: '🚨 ESCALATION NOTICE', value: 'This user has 3+ warnings. Consider further action.', inline: false }
+                );
+                warnEmbed.setColor(0xff0000);
+            }
+
+            await interaction.editReply({ embeds: [warnEmbed] });
+
+            // Send log to log channel
+            await this.sendToLogChannel(interaction.guild, warnEmbed);
+
+            // Try to DM the user
+            try {
+                const dmEmbed = new EmbedBuilder()
+                    .setTitle('⚠️ Warning Received')
+                    .setDescription(`You have received a warning in **${interaction.guild.name}**`)
+                    .addFields(
+                        { name: '📝 Reason', value: reason, inline: false },
+                        { name: '👮 Moderator', value: interaction.user.username, inline: true },
+                        { name: '📊 Total Warnings', value: `${warningCount}`, inline: true }
+                    )
+                    .setColor(0xffa500)
+                    .setTimestamp();
+
+                await user.send({ embeds: [dmEmbed] });
+            } catch (error) {
+                // User has DMs disabled, that's ok
+            }
+
+        } catch (error) {
+            console.error('Warning command error:', error);
+            const errorMessage = '❌ An error occurred while issuing the warning.';
+            
+            if (interaction.deferred) {
+                await interaction.editReply({ content: errorMessage });
+            } else {
+                await interaction.reply({ content: errorMessage, ephemeral: true });
+            }
+        }
+    }
+
+    async handleSlashWarningsCommand(interaction) {
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+            return interaction.reply({ content: '❌ You do not have permission to moderate members.', ephemeral: true });
+        }
+
+        const user = interaction.options.getUser('user') || interaction.user;
+        const showRemoved = interaction.options.getBoolean('show-removed') || false;
+
+        try {
+            await interaction.deferReply({ ephemeral: true });
+
+            if (!this.db || !this.db.isConnected) {
+                return interaction.editReply({ content: '❌ Database is not available. Warning system requires database connection.' });
+            }
+
+            const warnings = await this.db.getUserWarnings(interaction.guild.id, user.id, !showRemoved);
+            const activeCount = await this.db.getUserWarningCount(interaction.guild.id, user.id, true);
+
+            if (warnings.length === 0) {
+                const embed = new EmbedBuilder()
+                    .setTitle('📋 Warning History')
+                    .setDescription(`**${user.username}** has no ${showRemoved ? '' : 'active '}warnings.`)
+                    .setColor(0x00ff00)
+                    .setTimestamp();
+
+                return interaction.editReply({ embeds: [embed] });
+            }
+
+            // Create paginated warning list
+            const warningFields = warnings.slice(0, 10).map(warning => {
+                const status = warning.is_active ? '🟢 Active' : '🔴 Removed';
+                const date = new Date(warning.created_at).toLocaleDateString();
+                
+                let value = `**Reason:** ${warning.reason}\n**Moderator:** ${warning.moderator_username}\n**Date:** ${date}`;
+                
+                if (!warning.is_active && warning.removed_by_username) {
+                    value += `\n**Removed by:** ${warning.removed_by_username}`;
+                    if (warning.removal_reason) {
+                        value += `\n**Removal reason:** ${warning.removal_reason}`;
+                    }
+                }
+
+                return {
+                    name: `${status} - Warning ID: ${warning.id}`,
+                    value: value,
+                    inline: false
+                };
+            });
+
+            const embed = new EmbedBuilder()
+                .setTitle('📋 Warning History')
+                .setDescription(`**${user.username}** has ${activeCount} active warnings (showing ${Math.min(warnings.length, 10)} of ${warnings.length} total)`)
+                .addFields(warningFields)
+                .setColor(activeCount > 0 ? 0xffa500 : 0x00ff00)
+                .setTimestamp();
+
+            if (warnings.length > 10) {
+                embed.setFooter({ text: `Showing first 10 warnings. Use the web dashboard to view all ${warnings.length} warnings.` });
+            }
+
+            await interaction.editReply({ embeds: [embed] });
+
+        } catch (error) {
+            console.error('Warnings command error:', error);
+            await interaction.editReply({ content: '❌ An error occurred while retrieving warnings.' });
+        }
+    }
+
+    async handleSlashRemoveWarnCommand(interaction) {
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+            return interaction.reply({ content: '❌ You do not have permission to moderate members.', ephemeral: true });
+        }
+
+        const warningId = interaction.options.getInteger('warning-id');
+        const reason = interaction.options.getString('reason') || 'No reason provided';
+
+        try {
+            await interaction.deferReply({ ephemeral: true });
+
+            if (!this.db || !this.db.isConnected) {
+                return interaction.editReply({ content: '❌ Database is not available. Warning system requires database connection.' });
+            }
+
+            // Check if warning exists and is active
+            const warning = await this.db.getWarningById(warningId, interaction.guild.id);
+            
+            if (!warning) {
+                return interaction.editReply({ content: '❌ Warning not found or not in this server.' });
+            }
+
+            if (!warning.is_active) {
+                return interaction.editReply({ content: '❌ This warning has already been removed.' });
+            }
+
+            // Remove the warning
+            const success = await this.db.removeWarning(
+                warningId,
+                interaction.guild.id,
+                interaction.user.id,
+                interaction.user.username,
+                reason
+            );
+
+            if (!success) {
+                return interaction.editReply({ content: '❌ Failed to remove warning.' });
+            }
+
+            // Log the action
+            await this.db.logModeration(
+                interaction.guild.id,
+                'removewarn',
+                interaction.user.id,
+                interaction.user.username,
+                warning.user_id,
+                warning.username,
+                reason,
+                { warning_id: warningId, original_reason: warning.reason }
+            );
+
+            const embed = new EmbedBuilder()
+                .setTitle('✅ WARNING REMOVED')
+                .setColor(0x00ff00)
+                .addFields(
+                    { name: '📋 Warning ID', value: `${warningId}`, inline: true },
+                    { name: '👤 User', value: `${warning.username}`, inline: true },
+                    { name: '👮 Removed by', value: `${interaction.user.username}`, inline: true },
+                    { name: '📝 Original Reason', value: warning.reason, inline: false },
+                    { name: '🗑️ Removal Reason', value: reason, inline: false }
+                )
+                .setTimestamp();
+
+            await interaction.editReply({ embeds: [embed] });
+
+            // Send to log channel
+            await this.sendToLogChannel(interaction.guild, embed);
+
+        } catch (error) {
+            console.error('Remove warning command error:', error);
+            await interaction.editReply({ content: '❌ An error occurred while removing the warning.' });
+        }
+    }
+
     async handleSlashStatusCommand(interaction) {
         const guild = interaction.guild;
         const isLockedDown = this.lockdownStatus.get(guild.id) || false;
 
-        const embed = new EmbedBuilder()
-            .setTitle('🛡️ Guardian Bot Status')
-            .addFields(
-                { name: '🔒 Lockdown Status', value: isLockedDown ? '🔴 ACTIVE' : '🟢 INACTIVE', inline: true },
-                { name: '🛡️ Anti-Raid', value: config.antiRaid.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
-                { name: '💥 Anti-Nuke', value: config.antiNuke.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
-                { name: '👮 Admin Monitoring', value: config.adminMonitoring.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
-                { name: '📝 Logging', value: config.logging.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
-                { name: '⚡ Rapid Response', value: '🟢 Active', inline: true }
-            )
-            .setColor(0x00ff00)
-            .setTimestamp();
+        try {
+            await interaction.deferReply();
 
-        await interaction.reply({ embeds: [embed] });
+            const embed = new EmbedBuilder()
+                .setTitle('🛡️ Guardian Bot Status')
+                .addFields(
+                    { name: '🔒 Lockdown Status', value: isLockedDown ? '🔴 ACTIVE' : '🟢 INACTIVE', inline: true },
+                    { name: '🛡️ Anti-Raid', value: config.antiRaid.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
+                    { name: '💥 Anti-Nuke', value: config.antiNuke.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
+                    { name: '👮 Admin Monitoring', value: config.adminMonitoring.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
+                    { name: '📝 Logging', value: config.logging.enabled ? '🟢 Enabled' : '🔴 Disabled', inline: true },
+                    { name: '⚡ Rapid Response', value: '🟢 Active', inline: true }
+                )
+                .setColor(0x00ff00)
+                .setTimestamp();
+
+            // Add warning system stats if database is available
+            if (this.db && this.db.isConnected) {
+                try {
+                    const warningStats = await this.db.getWarningStats(guild.id);
+                    if (warningStats) {
+                        embed.addFields(
+                            { name: '⚠️ Warning System', value: `${warningStats.active_warnings} active warnings`, inline: true },
+                            { name: '📊 Warning Stats (30d)', value: `${warningStats.total_warnings} total • ${warningStats.warned_users} users`, inline: true }
+                        );
+                    }
+                } catch (error) {
+                    console.error('Failed to get warning stats:', error);
+                }
+            }
+
+            await interaction.editReply({ embeds: [embed] });
+        } catch (error) {
+            console.error('Status command error:', error);
+            const errorMessage = '❌ An error occurred while retrieving status.';
+            
+            if (interaction.deferred) {
+                await interaction.editReply({ content: errorMessage });
+            } else {
+                await interaction.reply({ content: errorMessage, ephemeral: true });
+            }
+        }
     }
 
     async handleSlashSettingsCommand(interaction) {
@@ -2495,11 +2840,15 @@ class GuardianBot {
                 { name: '🔨 /ban <user> [reason]', value: 'Ban a user', inline: true },
                 { name: '👢 /kick <user> [reason]', value: 'Kick a user', inline: true },
                 { name: '🗑️ /purge <amount>', value: 'Delete messages (1-100)', inline: true },
+                { name: '⚠️ /warn <user> <reason>', value: 'Issue warning to user', inline: true },
+                { name: '📋 /warnings [user]', value: 'View user warnings', inline: true },
+                { name: '🗑️ /removewarn <id>', value: 'Remove warning by ID', inline: true },
                 { name: '📊 /status', value: 'Show bot protection status', inline: true },
                 { name: '⚙️ /settings', value: 'Show current settings', inline: true },
                 { name: '🚨 /emergency-restore', value: 'Fix broken lockdown permissions', inline: true },
                 { name: '🤖 /help', value: 'Show this help message', inline: true },
-                { name: '🛡️ Auto-Protection', value: 'Mentions of "Skeeter" trigger automatic warnings!', inline: false }
+                { name: '🛡️ Auto-Protection', value: 'Mentions of "Skeeter" trigger automatic warnings!', inline: false },
+                { name: '⚠️ Warning System', value: 'Track user behavior with persistent warnings. Escalation notices at 3+ warnings.', inline: false }
             )
             .setColor(0x0099ff)
             .setFooter({ text: 'Guardian Bot created by Skeeter - Protecting your server 24/7' })
