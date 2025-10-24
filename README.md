@@ -1,187 +1,370 @@
-# 🛡️ Discord Guardian Bot
+# 🛡️ Guardian Bot# 🛡️ Discord Guardian Bot
 
-An advanced Discord security bot with comprehensive anti-raid, anti-nuke protection, and admin monitoring features designed to protect your Discord server from malicious attacks and rogue administrators.
 
-## ✨ Features
 
-### 🛡️ Anti-Raid Protection
-- **Rapid Join Detection**: Monitors for suspicious mass joins
-- **Automatic Response**: Kicks recent joiners during detected raids
-- **Auto-Lockdown**: Automatically locks down server during raid attempts
+Advanced Discord security bot with comprehensive anti-raid, anti-nuke protection, warning system, and admin monitoring.An advanced Discord security bot with comprehensive anti-raid, anti-nuke protection, and admin monitoring features designed to protect your Discord server from malicious attacks and rogue administrators.
+
+
+
+## ⚡ Quick Start## ✨ Features
+
+
+
+1. **Install Dependencies**### 🛡️ Anti-Raid Protection
+
+   ```bash- **Rapid Join Detection**: Monitors for suspicious mass joins
+
+   npm install- **Automatic Response**: Kicks recent joiners during detected raids
+
+   ```- **Auto-Lockdown**: Automatically locks down server during raid attempts
+
 - **Configurable Thresholds**: Customize join limits and time windows
 
-### 💥 Anti-Nuke Protection
-- **Channel/Role Deletion Monitoring**: Tracks mass deletions
-- **Rapid Response**: Immediate lockdown on nuke attempts
+2. **Configure Bot**
+
+   - Copy `config.template.json` to `config.json`### 💥 Anti-Nuke Protection
+
+   - Add your Discord bot token and database credentials- **Channel/Role Deletion Monitoring**: Tracks mass deletions
+
+   - Configure your server settings- **Rapid Response**: Immediate lockdown on nuke attempts
+
 - **Automatic Protection**: Prevents server destruction
-- **Audit Log Integration**: Identifies and punishes nukers
 
-### 👮 Admin Monitoring System
-- **Action Tracking**: Monitors admin kicks, bans, and mutes
+3. **Register Commands**- **Audit Log Integration**: Identifies and punishes nukers
+
+   ```bash
+
+   npm run register### 👮 Admin Monitoring System
+
+   ```- **Action Tracking**: Monitors admin kicks, bans, and mutes
+
 - **Time-Based Limits**: 3 actions in 2 minutes triggers warnings
-- **Progressive Punishment**: Warning → Role Removal → Ban
-- **Rogue Admin Protection**: Automatic response to admin abuse
 
-### 🔒 Server Lockdown
+4. **Start Bot**- **Progressive Punishment**: Warning → Role Removal → Ban
+
+   ```bash- **Rogue Admin Protection**: Automatic response to admin abuse
+
+   npm start
+
+   ```### 🔒 Server Lockdown
+
 - **Instant Lockdown**: Lock all channels with one command
-- **Emergency Response**: Automatic lockdown during attacks
-- **Permission Management**: Removes dangerous permissions temporarily
-- **Quick Recovery**: Easy unlock when threat passes
 
-### 📝 Comprehensive Logging
-- **All Events Logged**: Joins, leaves, bans, kicks, role changes
-- **Real-time Alerts**: Instant notifications in log channel
-- **Detailed Information**: User IDs, timestamps, reasons
+## 🎯 Core Features- **Emergency Response**: Automatic lockdown during attacks
+
+- **Permission Management**: Removes dangerous permissions temporarily
+
+### 🛡️ Security Protection- **Quick Recovery**: Easy unlock when threat passes
+
+- **Anti-Raid System**: Detects and stops mass joins
+
+- **Anti-Nuke Protection**: Prevents channel/role mass deletion  ### 📝 Comprehensive Logging
+
+- **Admin Monitoring**: Tracks rogue administrator actions- **All Events Logged**: Joins, leaves, bans, kicks, role changes
+
+- **Auto-Lockdown**: Automatically locks server during attacks- **Real-time Alerts**: Instant notifications in log channel
+
+- **Skeeter Protection**: Special protection for designated users- **Detailed Information**: User IDs, timestamps, reasons
+
 - **Security Audit Trail**: Complete record of all activities
 
-### ⚡ Admin Commands
-- `!lockdown` - Lock down the entire server
-- `!unlock` - Remove server lockdown
-- `!ban <user> [reason]` - Ban a user
-- `!kick <user> [reason]` - Kick a user
+### ⚠️ Warning System
+
+- **Issue Warnings**: `/warn <user> <reason>` - Track user behavior### ⚡ Admin Commands
+
+- **View History**: `/warnings [user]` - See warning records- `!lockdown` - Lock down the entire server
+
+- **Remove Warnings**: `/removewarn <id>` - Manage warnings- `!unlock` - Remove server lockdown
+
+- **Escalation Alerts**: Automatic notices at 3+ warnings- `!ban <user> [reason]` - Ban a user
+
+- **Database Storage**: Persistent warning records with audit trails- `!kick <user> [reason]` - Kick a user
+
 - `!purge <amount>` - Delete messages (1-100)
-- `!status` - Show bot protection status
-- `!settings` - Show current configuration
-- `!help` - Show all available commands
 
-## 🚀 Setup Instructions
+### 🔧 Moderation Tools- `!status` - Show bot protection status
 
-### Step 1: Create Discord Bot
+- **Lockdown/Unlock**: `/lockdown` `/unlock` - Server-wide protection- `!settings` - Show current configuration
 
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click "New Application" and give it a name
+- **User Management**: `/ban` `/kick` `/purge` - Standard moderation- `!help` - Show all available commands
+
+- **Emergency Restore**: `/emergency-restore` - Fix broken permissions
+
+- **Status Monitoring**: `/status` - Real-time security status## 🚀 Setup Instructions
+
+
+
+### 🎫 Ticket System### Step 1: Create Discord Bot
+
+- **Create Tickets**: `/ticket` - Support ticket creation
+
+- **Staff Management**: `/claim-ticket` `/close-ticket` - Ticket handling1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+
+- **Statistics**: Track ticket performance and response times2. Click "New Application" and give it a name
+
 3. Go to "Bot" section and click "Add Bot"
-4. Copy the bot token (keep this secret!)
+
+## 📋 Commands4. Copy the bot token (keep this secret!)
+
 5. Enable all "Privileged Gateway Intents":
-   - Presence Intent
-   - Server Members Intent
-   - Message Content Intent
 
-### Step 2: Bot Permissions
+### Security Commands   - Presence Intent
 
-The bot needs these permissions (Permission Integer: `8589934590`):
-- Administrator (recommended for full functionality)
-- Or manually grant:
-  - View Channels
-  - Send Messages
-  - Manage Messages
-  - Embed Links
+- `/lockdown [reason]` - Lock down entire server   - Server Members Intent
+
+- `/unlock [reason]` - Remove server lockdown     - Message Content Intent
+
+- `/emergency-restore` - Fix broken lockdown permissions
+
+- `/status` - Show bot protection status### Step 2: Bot Permissions
+
+
+
+### Moderation CommandsThe bot needs these permissions (Permission Integer: `8589934590`):
+
+- `/ban <user> [reason]` - Ban a user- Administrator (recommended for full functionality)
+
+- `/kick <user> [reason]` - Kick a user- Or manually grant:
+
+- `/purge <amount>` - Delete messages (1-100)  - View Channels
+
+- `/warn <user> <reason>` - Issue warning to user  - Send Messages
+
+- `/warnings [user] [show-removed]` - View user warnings  - Manage Messages
+
+- `/removewarn <id> [reason]` - Remove warning by ID  - Embed Links
+
   - Read Message History
-  - Use Slash Commands
-  - Kick Members
-  - Ban Members
-  - Manage Channels
-  - Manage Roles
+
+### Ticket Commands  - Use Slash Commands
+
+- `/ticket` - Create support ticket  - Kick Members
+
+- `/claim-ticket` - Claim ticket (staff)  - Ban Members
+
+- `/close-ticket` - Close ticket  - Manage Channels
+
+- `/ticket-panel` - Create ticket panel (admin)  - Manage Roles
+
   - View Audit Log
 
-### Step 3: Install Dependencies
+### Information Commands
+
+- `/help` - Show all commands### Step 3: Install Dependencies
+
+- `/settings` - Show current settings
 
 ```bash
-cd discord-guardian-bot
+
+## ⚙️ Configurationcd discord-guardian-bot
+
 npm install
-```
 
-### Step 4: Configure Bot
+Edit `config.json` with your settings:```
 
-1. Open `config.json`
-2. Replace the following values:
 
-```json
+
+```json### Step 4: Configure Bot
+
 {
-  "token": "YOUR_BOT_TOKEN_HERE",
-  "clientId": "YOUR_BOT_CLIENT_ID",
-  "logChannelId": "CHANNEL_ID_FOR_LOGS",
-  "adminRoleIds": ["ADMIN_ROLE_ID_1", "ADMIN_ROLE_ID_2"],
-  "ownerIds": ["YOUR_DISCORD_ID_HERE"]
-}
-```
 
-**How to get IDs:**
-- Enable Developer Mode in Discord (User Settings → Advanced → Developer Mode)
-- Right-click on channels/roles/users and select "Copy ID"
+  "token": "YOUR_BOT_TOKEN",1. Open `config.json`
 
-### Step 5: Create Log Channel
+  "clientId": "YOUR_BOT_CLIENT_ID", 2. Replace the following values:
 
-1. Create a private channel for logs (e.g., `#guardian-logs`)
-2. Copy the channel ID and put it in `config.json`
-3. Make sure only admins can see this channel
+  "logChannelId": "LOG_CHANNEL_ID",
 
-### Step 6: Invite Bot to Server
+  "adminRoleIds": ["ADMIN_ROLE_ID"],```json
 
-Use this invite link (replace CLIENT_ID with your bot's client ID):
-```
-https://discord.com/api/oauth2/authorize?client_id=CLIENT_ID&permissions=8589934590&scope=bot
+  "ownerIds": ["OWNER_USER_ID"],{
+
+  "protectedUsers": ["PROTECTED_USER_ID"],  "token": "YOUR_BOT_TOKEN_HERE",
+
+  "antiRaid": {  "clientId": "YOUR_BOT_CLIENT_ID",
+
+    "enabled": true,  "logChannelId": "CHANNEL_ID_FOR_LOGS",
+
+    "joinThreshold": 5,  "adminRoleIds": ["ADMIN_ROLE_ID_1", "ADMIN_ROLE_ID_2"],
+
+    "timeWindow": 30000  "ownerIds": ["YOUR_DISCORD_ID_HERE"]
+
+  },}
+
+  "antiNuke": {```
+
+    "enabled": true,
+
+    "channelDeleteThreshold": 3,**How to get IDs:**
+
+    "timeWindow": 10000- Enable Developer Mode in Discord (User Settings → Advanced → Developer Mode)
+
+  },- Right-click on channels/roles/users and select "Copy ID"
+
+  "adminMonitoring": {
+
+    "enabled": true,### Step 5: Create Log Channel
+
+    "actionThreshold": 3,
+
+    "timeWindow": 1200001. Create a private channel for logs (e.g., `#guardian-logs`)
+
+  },2. Copy the channel ID and put it in `config.json`
+
+  "database": {3. Make sure only admins can see this channel
+
+    "enabled": true,
+
+    "host": "localhost",### Step 6: Invite Bot to Server
+
+    "user": "guardian",
+
+    "password": "password",Use this invite link (replace CLIENT_ID with your bot's client ID):
+
+    "database": "guardian_bot"```
+
+  }https://discord.com/api/oauth2/authorize?client_id=CLIENT_ID&permissions=8589934590&scope=bot
+
+}```
+
 ```
 
 ### Step 7: Start the Bot
 
+## 🔑 Required Permissions
+
 ```bash
-npm start
-```
 
-For development with auto-restart:
-```bash
-npm run dev
-```
+The bot needs these Discord permissions:npm start
 
-## ⚙️ Configuration Options
+- Administrator (recommended) OR:```
 
-### Anti-Raid Settings
+- Manage Channels
+
+- Manage Roles  For development with auto-restart:
+
+- Kick Members```bash
+
+- Ban Membersnpm run dev
+
+- Manage Messages```
+
+- View Audit Log
+
+- Send Messages## ⚙️ Configuration Options
+
+- Embed Links
+
+- Use Slash Commands### Anti-Raid Settings
+
 ```json
-"antiRaid": {
+
+## 📊 Database"antiRaid": {
+
   "enabled": true,
-  "joinThreshold": 5,        // Max joins before triggering
-  "timeWindow": 10000,       // Time window in milliseconds (10 seconds)
-  "punishmentType": "kick",  // "kick" or "none"
-  "lockdownOnRaid": true     // Auto-lockdown on raid detection
-}
+
+The bot uses MySQL for persistent data storage:  "joinThreshold": 5,        // Max joins before triggering
+
+- **Warnings**: User warning history and management  "timeWindow": 10000,       // Time window in milliseconds (10 seconds)
+
+- **Tickets**: Support ticket tracking and statistics    "punishmentType": "kick",  // "kick" or "none"
+
+- **Moderation Logs**: Complete audit trail of all actions  "lockdownOnRaid": true     // Auto-lockdown on raid detection
+
+- **Raid Tracking**: Anti-raid event monitoring}
+
 ```
+
+## 🚀 Deployment
 
 ### Anti-Nuke Settings
-```json
-"antiNuke": {
-  "enabled": true,
-  "channelDeleteThreshold": 3,  // Max channel deletions
+
+1. **Development**```json
+
+   ```bash"antiNuke": {
+
+   npm start  "enabled": true,
+
+   ```  "channelDeleteThreshold": 3,  // Max channel deletions
+
   "roleDeleteThreshold": 3,     // Max role deletions
-  "timeWindow": 30000,          // Time window (30 seconds)
-  "banNukers": true            // Auto-ban nukers (requires audit log access)
-}
-```
+
+2. **Production**   "timeWindow": 30000,          // Time window (30 seconds)
+
+   - Use a process manager like PM2  "banNukers": true            // Auto-ban nukers (requires audit log access)
+
+   - Set up MySQL database}
+
+   - Configure proper permissions```
+
+   - Monitor logs for issues
 
 ### Admin Monitoring Settings
-```json
+
+## 🛠️ Troubleshooting```json
+
 "adminMonitoring": {
-  "enabled": true,
-  "actionThreshold": 3,      // Max actions before warning
-  "timeWindow": 120000,      // Time window (2 minutes)
-  "warningEnabled": true,    // Send warning before punishment
+
+### Bot Not Responding  "enabled": true,
+
+- Check bot token is correct  "actionThreshold": 3,      // Max actions before warning
+
+- Verify bot has necessary permissions  "timeWindow": 120000,      // Time window (2 minutes)
+
+- Ensure bot is online in Discord  "warningEnabled": true,    // Send warning before punishment
+
   "autoRemoveRoles": true,   // Remove admin roles after warning
-  "autoBan": true           // Ban rogue admin after role removal
-}
-```
+
+### Commands Not Working    "autoBan": true           // Ban rogue admin after role removal
+
+- Check if you have required permissions}
+
+- Verify bot can read/send messages in channel```
+
+- Try `/help` to see available commands
 
 ## 🔧 Advanced Setup
 
-### Multiple Servers
-Each server needs its own log channel ID in the config. For multiple servers, consider using environment variables or a database.
+### Database Issues
+
+- Ensure MySQL is running### Multiple Servers
+
+- Check database credentials in configEach server needs its own log channel ID in the config. For multiple servers, consider using environment variables or a database.
+
+- Verify database permissions
 
 ### Custom Roles
-Add your admin role IDs to `adminRoleIds` array in config to grant bot command access.
 
-### Whitelist System
-The bot includes a whitelist command structure for exempting trusted users from certain protections (feature in development).
+### Permission ErrorsAdd your admin role IDs to `adminRoleIds` array in config to grant bot command access.
 
-## 🛠️ Troubleshooting
+- Check bot role hierarchy
 
-### Bot Not Responding
+- Ensure bot has required channel permissions### Whitelist System
+
+- Use `/emergency-restore` for lockdown issuesThe bot includes a whitelist command structure for exempting trusted users from certain protections (feature in development).
+
+
+
+## 📜 License## 🛠️ Troubleshooting
+
+
+
+MIT License - see LICENSE file for details.### Bot Not Responding
+
 - Check bot token is correct
-- Ensure bot has necessary permissions
+
+## 👨‍💻 Author- Ensure bot has necessary permissions
+
 - Verify bot is online in Discord
 
+Created by SKEETS_GUARDIAN
+
 ### Commands Not Working
-- Ensure you have admin permissions or required roles
+
+---- Ensure you have admin permissions or required roles
+
 - Check if bot can read messages in the channel
-- Verify bot has permission to send messages
+
+🛡️ **Guardian Bot** - Protecting Discord servers with advanced security features and comprehensive moderation tools.- Verify bot has permission to send messages
 
 ### Logging Not Working
 - Check log channel ID in config
