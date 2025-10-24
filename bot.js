@@ -2616,7 +2616,7 @@ class GuardianBot {
                 .setTimestamp();
 
             if (warnings.length > 10) {
-                embed.setFooter({ text: `Showing first 10 warnings. Use the web dashboard to view all ${warnings.length} warnings.` });
+                embed.setFooter({ text: `Showing first 10 warnings. Contact an administrator to view all ${warnings.length} warnings.` });
             }
 
             await interaction.editReply({ embeds: [embed] });
@@ -3247,7 +3247,7 @@ class GuardianBot {
     start() {
         this.client.login(config.token);
         
-        // Discord bot runs standalone - no web dashboard required
+        // Discord bot runs standalone - no web server required
     }
 }
 
