@@ -1,0 +1,36 @@
+{
+  "name": "discord-guardian-bot",
+  "version": "1.0.0",
+  "description": "Advanced Discord bot for anti-raid, anti-nuke protection with admin monitoring",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "nodemon bot.js",
+    "register": "node register_commands.js",
+    "deploy": "npm run register && npm start"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "security",
+    "anti-raid",
+    "anti-nuke",
+    "protection"
+  ],
+  "author": "SKEETS_GUARDIAN",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "discord.js": "^14.14.1",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "fs": "^0.0.1-security",
+    "mysql2": "^3.15.3",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

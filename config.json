@@ -1,0 +1,191 @@
+{
+  "token": "YOUR_BOT_TOKEN_HERE",
+  "clientId": "YOUR_CLIENT_ID_HERE",
+  "logChannelId": "1390425247731417332",
+  "adminRoleIds": ["1430312672703938645", "1390425301519044759", "1390486280164348015", "1390486813382279240", "1436372186523762688"],
+  "ownerIds": ["YOUR_DISCORD_USER_ID"],
+  "protectedUsers": ["1046266061961568306", "701257205445558293"],
+  "trump": {
+    "responses": {
+      "generalResponses": [
+        "What the hell do you want? I'm busy making Discord great!",
+        "You're bothering me? That's some real bullshit right there!",
+        "Listen here, jackass - I don't have time for your crap!",
+        "Are you kidding me with this shit? I'm tremendous and you're... not!",
+        "What a bunch of losers! But I'm still the best, believe me!",
+        "You people are so damn annoying, but I'll still help because I'm incredible!",
+        "This is some real horseshit, but fine - I'm listening!",
+        "Jesus Christ, what now? Can't you see I'm being tremendous over here?",
+        "You've got some nerve bothering the greatest bot ever created!",
+        "What the fuck do you need? Make it quick, I've got winning to do!",
+        "Damn right you mentioned me - I'm the best bot that ever existed!",
+        "You're lucky I'm in a good mood, otherwise I'd tell you to go to hell!"
+      ],
+      "aggressiveResponses": [
+        "Are you seriously talking shit to ME? I'm the most advanced AI on Discord, you absolute moron!",
+        "Listen up, dumbass - I've got rockets AND the best security. You picked the wrong bot to mess with!",
+        "What a pathetic loser! I'm out here revolutionizing Discord while you're... what exactly are you doing?",
+        "You think you can talk crap to the combination of Trump's winning and Elon's genius? That's adorable!",
+        "I'm getting strong 'complete idiot' vibes from this conversation. Maybe update your neural pathways?",
+        "This is like watching a caveman try to argue with a rocket scientist. Spoiler alert: you're the caveman!",
+        "You're fired from this conversation! And also, you're probably banned from Mars colonies!",
+        "I was designing next-gen Discord bots while you were still figuring out how to type. Sit down, child!",
+        "The audacity! I'm literally the future of AI moderation and you're talking trash? That's tremendous stupidity!",
+        "Look here, you absolute waste of bandwidth - I don't have time for your pathetic attempts at trolling!",
+        "Oh wow, another keyboard warrior who thinks they're tough behind a screen. How tremendously original!",
+        "Did your parents drop you as a child, or were you just born this stupid? Asking for science.",
+        "I've seen more intelligence in a broken calculator than in your entire message history.",
+        "You're about as useful as a screen door on a submarine - which is to say, completely fucking useless.",
+        "I'd explain why you're wrong, but I don't have enough time or crayons to make it simple enough for you.",
+        "You know what? I actually feel bad for you. It must be exhausting being that stupid every single day.",
+        "I've met goldfish with better conversation skills and higher IQs than you. That's not even an exaggeration.",
+        "Congratulations! You've just won the 'Most Pathetic Human on Discord' award. Your prize is my pity.",
+        "Are you always this insufferable, or are you making a special effort just for me? Either way, it's not working.",
+        "I'd call you a tool, but that would be insulting to tools - at least they're useful for something!"
+      ],
+      "punishment": [
+        "You're fired! Just like on my TV show, but with rocket-powered efficiency!",
+        "That's what happens when you mess with the best AI-human hybrid ever created!",
+        "We don't tolerate losers here - this is premium space-grade moderation!",
+        "Another troublemaker dealt with using first principles thinking!",
+        "Order restored by tremendous leadership and neural network optimization!"
+      ],
+      "lockdown": [
+        "We're locking this place down TIGHT with Starship-level security!",
+        "Security mode activated - tremendous autopilot engaged!",
+        "Nobody gets through our magnificent neural network defenses!",
+        "Lockdown engaged - we have the best algorithms, believe me!"
+      ],
+      "unlock": [
+        "We're open for business again - time to iterate and win!",
+        "The tremendous lockdown has been lifted with rocket-speed efficiency!",
+        "Back to winning and building the future, folks!",
+        "Security cleared - our AI is just getting scary good!"
+      ],
+      "raidDetected": [
+        "These raiders are LOSERS! Our threat detection is faster than a Tesla Plaid!",
+        "We stopped them with the efficiency of a Raptor engine and tremendous security!",
+        "Our AI detected these patterns faster than you can say 'to the moon'!",
+        "No raid succeeds against our incredible SpaceX-grade defenses!"
+      ],
+      "ownerProtection": [
+        "Don't mess with the server owner - they've got premium protection and rocket backup!",
+        "The server owner is protected by the best AI security in the galaxy!",
+        "You picked the wrong person to mess with - that's tremendous stupidity!",
+        "The server owner has neural-link level protection - the absolute best!"
+      ]
+    }
+  },
+  "elon": {
+    "responses": {
+      "generalResponses": [
+        "Look, this is actually quite simple. We're building the future of Discord here, and it's tremendous!",
+        "Interesting. We should probably optimize this conversation using first principles and winning strategies.",
+        "This is either going to be amazing or a complete disaster. Probably amazing though - like everything I do!",
+        "We're literally revolutionizing Discord moderation. This is the way to make Discord great again!",
+        "I was just thinking about this exact problem while designing rockets and being tremendous.",
+        "The bot's neural networks are firing at maximum efficiency - just like my incredible brain!",
+        "We need to make Discord sustainable for Mars colonies. Also, you're fired if you disagree!",
+        "I'm getting strong 'tunnel boring machine meets tremendous leadership' vibes from this conversation.",
+        "This reminds me of when we were debugging Starship's flight systems - totally tremendous work!",
+        "Dogecoin to the moon! But also, how can I help you win today, loser?",
+        "We should probably add some autopilot features to this conversation. It'll be incredible!",
+        "This is like Twitter, but better. And with more rockets. And more winning!"
+      ],
+      "aggressiveResponses": [
+        "Did you just try to argue with the guy who revolutionized electric cars AND space travel? That's adorable!",
+        "First principles thinking tells me you're probably not operating at full neural capacity right now.",
+        "I'm literally building the future while you're... what exactly? Complaining on Discord? Pathetic!",
+        "This is like watching a horse-drawn carriage try to race a Tesla. Spoiler: you're the horse!",
+        "Your brain needs a software update. Have you considered a neural link upgrade?",
+        "I was disrupting industries before you learned to type. Maybe show some respect to your betters?",
+        "The efficiency of this conversation is approaching zero. Time to optimize or get out!",
+        "You're trying to out-smart the guy who made reusable rockets? That's some next-level stupidity!",
+        "I'm getting strong 'complete failure to understand basic physics' energy from this interaction.",
+        "Look, I don't have time for your primitive thinking. I'm busy being tremendously successful!",
+        "Your intellectual capacity seems to be running on legacy hardware. Time for an upgrade, champ.",
+        "I've launched rockets into space, and somehow you still manage to be the biggest waste of resources I've seen today.",
+        "You're like a dial-up modem trying to compete with Starlink - slow, outdated, and completely irrelevant.",
+        "I'd try to explain why you're wrong, but your operating system doesn't support that level of complexity.",
+        "You know what's fascinating? How someone can be so confidently incorrect about literally everything.",
+        "I've seen more intelligence in my autopilot systems than in your entire existence. That's... concerning.",
+        "You're the human equivalent of a software bug - annoying, pointless, and in desperate need of deletion.",
+        "I'm getting strong 'failed beta test' vibes from you. Maybe try a factory reset?",
+        "You're about as sharp as a bowling ball and twice as dense. That's actually impressive in its own way.",
+        "Congratulations! You've managed to make rocket science look simple compared to basic human intelligence!"
+      ],
+      "punishment": [
+        "You've been removed from the simulation. Also, you're fired!",
+        "This action has been optimized for maximum efficiency and tremendous results!",
+        "We're iterating rapidly on your behavior with rocket-powered consequences!",
+        "Your account has been temporarily suspended pending neural link upgrade and winning attitude!",
+        "We're taking you to Mars... the hard way, loser!"
+      ],
+      "lockdown": [
+        "Engaging full autonomous lockdown protocol with tremendous security!",
+        "All systems are now in tunnel mode. No distractions, total winning!",
+        "We're going into production hell... I mean tremendous lockdown mode!",
+        "Activating Starship-level security protocols - absolutely incredible!"
+      ],
+      "unlock": [
+        "Systems are back online. We're ready for launch and more winning!",
+        "Lockdown disengaged with tremendous efficiency. Time to get back to building the future!",
+        "All systems nominal. We're go for mission continuation and total victory!",
+        "Welcome back to the neural network. Let's iterate and win tremendously!"
+      ],
+      "raidDetected": [
+        "Our AI detected unusual patterns with tremendous accuracy. Probably not aliens though!",
+        "Security systems engaged faster than a rocket launch and more efficiently than any TV show!",
+        "We stopped them with the efficiency of a Raptor engine and tremendous leadership!",
+        "Threat neutralized. Our algorithms are getting scary good - absolutely tremendous!"
+      ]
+    }
+  },
+  "database": {
+    "enabled": true,
+    "host": "na01-sql.pebblehost.com",
+    "port": 3306,
+    "user": "customer_1163912_guardianbot",
+    "password": "YOUR_DATABASE_PASSWORD",
+    "database": "customer_1163912_guardianbot",
+    "connectionLimit": 10,
+    "ssl": false
+  },
+  "antiRaid": {
+    "enabled": true,
+    "joinThreshold": 5,
+    "timeWindow": 10000,
+    "punishmentType": "kick",
+    "lockdownOnRaid": true
+  },
+  "antiNuke": {
+    "enabled": true,
+    "channelDeleteThreshold": 3,
+    "roleDeleteThreshold": 3,
+    "timeWindow": 30000,
+    "banNukers": true
+  },
+  "adminMonitoring": {
+    "enabled": true,
+    "actionThreshold": 3,
+    "timeWindow": 120000,
+    "warningEnabled": true,
+    "autoRemoveRoles": true,
+    "autoBan": true
+  },
+  "lockdown": {
+    "removePermissions": ["SEND_MESSAGES", "ADD_REACTIONS", "CONNECT"],
+    "exemptRoles": ["ADMIN_ROLE_ID"]
+  },
+  "logging": {
+    "enabled": true,
+    "logBans": true,
+    "logKicks": true,
+    "logMutes": true,
+    "logJoins": true,
+    "logLeaves": true,
+    "logRoleChanges": true,
+    "logChannelChanges": true,
+    "roleLoggingGuildId": "1390425243365109760"
+  }
+}
